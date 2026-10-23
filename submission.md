@@ -181,3 +181,46 @@ artist and title queries, and complete tag serialization. The distinct-song test
 ensures two records with identical titles/artists remain two results rather than
 being collapsed by display text. Missing-query HTTP 400 and empty-match response
 schema also pass.
+
+**Issue #4 — I got notified when a friend added my song to a playlist but not when they rated it**
+
+**How you reproduced it:** Posted `{"user_id":"friend","score":5}` to
+`/songs/song/rate` in an isolated fixture. HTTP 201 and a fresh-session `Rating`
+lookup confirmed the score persisted, but `/users/owner/notifications` had count
+0 instead of 1. The demo independently records the same behavior for `anthem`
+in `artifacts/baseline.json`. The reference playlist notification path was
+exercised with a populated association (avoiding the separately documented
+original new-entry insertion failure); it produced `song_added_to_playlist`.
+
+**How you found the root cause:** Followed `routes/songs.py:rate()` into
+`notification_service.rate_song()` and compared it with
+`routes/playlists.py:add_song()` -> `add_to_playlist()` -> `create_notification()`.
+The latter explicitly creates a `Notification` addressed to `Song.shared_by`.
+The former validates and upserts `Rating`, then commits and returns without
+calling any notification helper. `get_notifications()` only reads existing rows;
+there is no automatic model event linking Rating persistence to notification creation.
+
+**The root cause:** The rating workflow omitted an entire notification-producing
+step. Saving a `Rating` does not itself create a `Notification`. This architectural
+data-flow omission explains why valid ratings persisted while no notification
+ever existed to retrieve, unlike the explicit playlist interaction flow.
+
+**Your fix:** New ratings in `services/notification_service.py:rate_song()` now
+call the shared `create_notification()` helper with type `song_rated`, the song
+sharer as recipient, and the actor/song/score in the body. The helper accepts a
+keyword-only `commit=False` option so the rating and notification commit together;
+its default retains existing standalone behavior. Self-ratings do not notify.
+The chosen repeat policy is one notification per newly created user/song rating:
+retries and score edits update the existing rating without additional alerts.
+Other users' first ratings each produce their own alert, matching the existing
+playlist flow's non-owner interaction policy without adding new friendship rules.
+
+**Your side-effect check:** All **5 notification tests passed**
+(`artifacts/issue_4_tests.txt`). `test_saved_rating_notifies_song_owner` verifies
+persisted data, recipient, body, type, unread state, and no rater notification.
+The rerating test checks stable rating ID, changed score, one stored rating,
+and notifications from different users. Self/invalid-score/missing-entity cases
+do not create alerts. The playlist comparison test preserves playlist alerts
+and verifies mark-read/unread filtering; the commit-failure test rolls back both
+Rating and Notification. Issue 5 will additionally exercise the reference flow
+through an actual new playlist entry once its insertion obstacle is repaired.

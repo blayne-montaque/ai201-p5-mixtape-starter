@@ -10,7 +10,7 @@ from models import Notification, Song, User, Rating
 from sqlalchemy import desc
 
 
-def create_notification(user_id: str, notification_type: str, body: str) -> Notification:
+def create_notification(user_id: str, notification_type: str, body: str, *, commit: bool = True) -> Notification:
     """
     Create a notification for a user.
 
@@ -18,6 +18,7 @@ def create_notification(user_id: str, notification_type: str, body: str) -> Noti
         user_id: The ID of the user who should receive the notification.
         notification_type: A short type string, e.g. 'song_added_to_playlist' or 'song_rated'.
         body: The human-readable notification message.
+        commit: Set False to include the notification in the caller's transaction.
 
     Returns:
         The created Notification instance.
@@ -28,7 +29,8 @@ def create_notification(user_id: str, notification_type: str, body: str) -> Noti
         body=body,
     )
     db.session.add(notification)
-    db.session.commit()
+    if commit:
+        db.session.commit()
     return notification
 
 
@@ -104,6 +106,15 @@ def rate_song(user_id: str, song_id: str, score: int) -> Rating:
     else:
         rating = Rating(user_id=user_id, song_id=song_id, score=score)
         db.session.add(rating)
+
+        # Notify once for a new rating, not edits/retries or the sharer's own rating.
+        if song.shared_by != user_id:
+            create_notification(
+                user_id=song.shared_by,
+                notification_type="song_rated",
+                body=f"{rater.username} rated your song '{song.title}' {score}/5.",
+                commit=False,
+            )
 
     db.session.commit()
 
