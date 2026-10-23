@@ -1,12 +1,37 @@
 # AI Usage
 
-Codex read the project README before application source, inspected the models,
-application factory, routes, starter tests, seed script, and service interfaces,
-and traced playlist creation end to end. The service survey used function
-signatures and docstrings; `create_playlist()` was read in full to verify the
-architectural call chain below. This initial document is an orientation checkpoint
-written before reproductions or investigation of the reported service behavior.
-No human code review is claimed. No LLM API calls or private credentials were used.
+Codex acted as the implementation and debugging agent. It read the README before
+application source, summarized models, factory configuration, routes, starter
+tests, seed data, and service interfaces, then traced playlist creation end to end.
+The initial service survey used signatures and docstrings; `create_playlist()`
+was read in full. The architectural map below was committed as `6d78b8f` before
+reproduction or service bug investigation, and its original text is preserved.
+
+During investigation Codex traced all five route/service/model paths documented
+in the RCAs, compared rating and playlist notification flows, and checked proposed
+causes against executable fixtures. It wrote endpoint regressions and an isolated
+demo, captured **11 failing and 10 passing new cases** on unchanged application
+code, and committed that baseline as `036ae65` before any fixes. The original
+starter suite separately had **4 failures and 9 passes**. Observed results, not
+code inspection alone, established each diagnosis.
+
+An incomplete initial expectation was that the reference playlist-add flow would
+work for new entries. Actual execution exposed missing required association data;
+the baseline records this error and uses an explicit fixture insertion to isolate
+retrieval. Issue 5 consequently repairs both the reported omission and that
+directly related POST obstruction. The starter's seed header also overstated its
+song count; execution confirmed 13 songs. The HTTP helper initially needed Windows
+process-tree cleanup and normal process permissions; its successful rerun is saved.
+No other incorrect bug hypotheses are claimed.
+
+Codex implemented and locally committed five separate fixes, completed each RCA
+before moving on, and prepared the demonstration and audit. Independent executable
+checks include fresh-session database reads, **35 passing pytest cases**, the
+five-behavior demo, and a real HTTP request to a factory-launched Flask process.
+Clock control replaces only time acquisition; SQLAlchemy queries, services,
+routes, and persistence execute normally. The full brief was supplied in chat
+during baseline preparation. No human review, video recording, course submission,
+or remote push is claimed. No Groq/LLM API calls were made and `.env` was not loaded.
 
 # Codebase Map
 
@@ -268,3 +293,21 @@ contributor/timestamp persistence, repeated POSTs, and exactly one owner alert.
 Self-adds do not notify; missing playlist/song/user inputs remain HTTP 400, and
 missing playlist GET remains 404. The rating/playlist comparison test now uses
 a genuine new-entry POST and still verifies both notification types and read state.
+
+# Verification and submission
+
+- Full suite: `python -m pytest tests/ -q` -> **35 passed**;
+  `artifacts/final_tests.txt` contains the actual result.
+- Repeatable demonstration: `python scripts/demo_mixtape.py --check` -> all five
+  behaviors verified; output in `artifacts/demo_output.txt`.
+- Actual factory startup/HTTP check: `python scripts/verify_http.py` -> HTTP 200,
+  one Anthem result; `artifacts/startup_verification.txt`.
+- Original failures: `artifacts/baseline.md`, `artifacts/baseline.json`, and
+  `artifacts/baseline_regressions.txt`. Existing starter tests are unchanged.
+- Recording instructions, narration, reset commands, and history demonstration:
+  `DEMO_GUIDE.md`. Final coverage and security checks: `artifacts/repository_audit.md`.
+
+All work is local on `bugfix/mixtape`. After explicit approval, publish with
+`git push -u origin bugfix/mixtape`. The intended future submission URL is
+https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape .
+The branch has not been pushed or submitted through the Course Portal.

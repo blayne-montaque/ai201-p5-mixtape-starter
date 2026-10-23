@@ -1,0 +1,8 @@
+﻿Seed data created successfully.
+  Users: 5
+  Songs: 13
+  Playlists: 3
+  Tags: 10
+Factory startup: PASS (python -m flask --app app:create_app run)
+GET /songs/search?q=Anthem: HTTP 200; count=1; title=Crown Heights Anthem
+Temporary database removed; server stopped; private .env not loaded.

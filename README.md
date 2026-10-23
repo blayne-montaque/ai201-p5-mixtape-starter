@@ -115,3 +115,11 @@ fix: correct Sunday boundary condition in streak reset logic
 ```
 
 See the project brief for full submission requirements.
+
+## Completed bug hunt
+
+See [submission.md](submission.md) for the architecture map, AI usage, and five
+root cause analyses. [DEMO_GUIDE.md](DEMO_GUIDE.md) has verified Windows commands,
+before/after evidence, and the recording script. Run the isolated demonstration
+with `python scripts/demo_mixtape.py --check` and all tests with
+`python -m pytest tests/ -q`.

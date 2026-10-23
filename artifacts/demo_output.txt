@@ -1,0 +1,7 @@
+﻿Mixtape: isolated database, clock fixed at Sunday 2024-06-16 09:00 UTC
+1. Streak: Saturday 12 -> Sunday 13 (expected 13)
+2. Feed: yesterday only = 0; after today's listen = 1 (expected 0, 1)
+3. Search: Anthem results = 1 (expected 1)
+4. Rating: saved 5/5; owner notifications = 1 (expected 1)
+5. Playlist: 7/7 before; 8/8 after POST (expected 7, 8)
+All five corrected behaviors verified.
