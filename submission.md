@@ -74,3 +74,38 @@ playlists, and notifications. Its executable data creates 5 users, 13 songs,
 `tests/test_playlists.py` use pytest fixtures and in-memory SQLite to exercise
 service behavior. The factory is launched with
 `python -m flask --app app:create_app run`.
+
+# Root Cause Analyses
+
+**Issue #1 — My listening streak keeps resetting**
+
+**How you reproduced it:** The isolated demo starts a friend at streak 12 with
+a Saturday 2024-06-15 23:00 UTC last listen. At Sunday 09:00, it posts to
+`/songs/anthem/listen` and reads `/users/friend/streak`: the original response
+was 1 instead of 13 (`artifacts/baseline.json`). The added endpoint regression
+also failed at the exact Saturday 23:59:59 -> Sunday 00:00 boundary. The starter
+`test_streak_increments_on_sunday` returned 1 instead of 2.
+
+**How you found the root cause:** Traced `routes/users.py:streak()` to
+`streak_service.get_streak()`, which reads stored `User.listening_streak`, then
+traced the mutation from `routes/songs.py:listen()` through
+`record_listening_event()` to `update_listening_streak()`. Controlled dates made
+`days_since_last` equal 1 while Sunday made `today.weekday()` equal 6. The
+saved failing tests confirmed that this extra weekday guard selected the reset.
+
+**The root cause:** `elif days_since_last == 1 and today.weekday() != 6` explicitly
+excluded Sunday from consecutive-day increments. Sunday's valid next-day listen
+fell into the reset-to-1 branch. The endpoint faithfully returned that persisted
+incorrect value; the fault was in updating the model, not serializing the profile.
+
+**Your fix:** Removed the weekday exclusion in
+`services/streak_service.py:update_listening_streak()`. A one-calendar-day gap now
+increments on every weekday, using the existing UTC convention and date arithmetic.
+
+**Your side-effect check:** Ran `tests/test_streaks.py` and
+`tests/regressions/test_streak_api.py`: **10 passed** (`artifacts/issue_1_tests.txt`).
+`test_calendar_streak_persists_through_listen_endpoint` covers Saturday/Sunday,
+Sunday/Monday, repeated Sunday listening, a skipped day ending Sunday, and the
+year boundary. It removes the session and reads stored streak/event state through
+the real endpoint. Existing first-listen, ordinary consecutive-day, same-day, and
+skipped-day tests also pass.
