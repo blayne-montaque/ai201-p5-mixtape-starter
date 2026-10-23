@@ -146,3 +146,38 @@ exact midnight, next midnight, the latest song for a friend with multiple listen
 descending friend order, exclusion of self/nonfriends, empty friendships, and
 HTTP 404 for a missing user. The previous-day event remains visible through
 `/feed/owner/activity`.
+
+**Issue #3 — The same song keeps showing up twice in search**
+
+**How you reproduced it:** Created Crown Heights Anthem with three `song_tags`
+associations (rap, hip-hop, boom bap) and requested `GET /songs/search?q=Anthem`.
+The original returned three dictionaries with the same song ID, while songs with
+zero or one tag appeared once (`artifacts/baseline.json`). The actual seeded Flask
+server also returned HTTP 200 with three Anthem entries. The starter multi-tag
+test and the added three-tag endpoint case both failed before changes.
+
+**How you found the root cause:** Traced `routes/songs.py:search()` to
+`services/search_service.py:search_songs()` and the `Song`/`song_tags` relationship
+in `models.py`. `select(Song).outerjoin(song_tags, ...)` produces one SQL row per
+association. `db.session.execute(...).scalars().all()` in the starter's SQLAlchemy
+2-style query keeps those repeated entity references. Varying tag counts in the
+same test isolated the cause; the symptom did not require a separate search path.
+
+**The root cause:** A many-to-many join multiplied the selected song rows, and
+the scalar result was serialized without entity deduplication. A title/artist
+match is true for each joined tag row, so a three-tag song yielded three identical
+results. Zero-tag songs survive the outer join as one row.
+
+**Your fix:** Added `.unique()` after `.scalars()` in `search_songs()` before
+materialization. SQLAlchemy now emits each song identity once while keeping its
+loaded tags. The title/artist predicates, outer join, and encounter order are
+preserved. The starter defines no explicit search sorting clause, so no new
+sort contract was introduced.
+
+**Your side-effect check:** All **9 tests passed** across `tests/test_search.py`
+and `tests/regressions/test_search_api.py` (`artifacts/issue_3_tests.txt`).
+`test_search_unique_with_complete_tags` covers zero/one/three tags, case-insensitive
+artist and title queries, and complete tag serialization. The distinct-song test
+ensures two records with identical titles/artists remain two results rather than
+being collapsed by display text. Missing-query HTTP 400 and empty-match response
+schema also pass.
