@@ -109,3 +109,40 @@ Sunday/Monday, repeated Sunday listening, a skipped day ending Sunday, and the
 year boundary. It removes the session and reads stored streak/event state through
 the real endpoint. Existing first-listen, ordinary consecutive-day, same-day, and
 skipped-day tests also pass.
+
+**Issue #2 — Friends Listening Now shows people from yesterday**
+
+**How you reproduced it:** With the service clock fixed at Sunday 2024-06-16
+09:00 UTC and a friend's sole event at Saturday 23:00 UTC,
+`GET /feed/owner/listening-now` returned count 1, expected 0. After a Sunday
+listen it correctly still returned 1. `artifacts/baseline.json` records both
+observations; `test_listening_now_excludes_previous_evening` failed on the
+original response. A separate boundary fixture also exposed a next-day event
+being included because the original filter had no upper bound.
+
+**How you found the root cause:** Followed `routes/feed.py:listening_now()` to
+`services/feed_service.py:get_friends_listening_now()`, its friendship lookup,
+and the `ListeningEvent.listened_at` SQL filter. It subtracted
+`RECENT_THRESHOLD = timedelta(hours=24)` from `datetime.now(timezone.utc)`.
+At Sunday 09:00 that cutoff is Saturday 09:00, which admits Saturday 23:00.
+The model defaults and listen writer use UTC; SQLite returns these stored
+timestamps without timezone metadata. No per-user timezone setting exists.
+
+**The root cause:** The implementation selected a rolling 24-hour window, while
+the user contract selects the current calendar day. Yesterday evening remained
+eligible until the same hour today. Filtering and serialization were functioning;
+the window's definition was wrong.
+
+**Your fix:** `get_friends_listening_now()` now computes UTC midnight and the
+following midnight, selecting `listened_at >= day_start` and
+`listened_at < day_end`. This includes today's midnight and excludes both
+yesterday and tomorrow. Existing latest-event-per-friend selection and descending
+timestamp order remain in place. General activity history retains its wider scope.
+
+**Your side-effect check:** Both tests in `tests/regressions/test_feed_api.py`
+passed (`artifacts/issue_2_tests.txt`). Besides the evening-to-morning regression,
+`test_feed_midnight_bounds_latest_friend_and_order` checks just before midnight,
+exact midnight, next midnight, the latest song for a friend with multiple listens,
+descending friend order, exclusion of self/nonfriends, empty friendships, and
+HTTP 404 for a missing user. The previous-day event remains visible through
+`/feed/owner/activity`.
