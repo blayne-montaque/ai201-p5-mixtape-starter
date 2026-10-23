@@ -1,0 +1,19 @@
+Command: git branch --show-current
+bugfix/mixtape
+
+Command: git log --oneline
+c3dc76f docs: prepare verified recording guide and submission audit
+8ee7a6b fix: return every playlist song and persist ordered additions
+14b5b3d fix: notify song sharers when new ratings are saved
+33f1766 fix: deduplicate joined song search results by identity
+e356c61 fix: restrict listening feed to current UTC calendar day
+6f6d0b8 fix: preserve listening streaks across Sunday
+036ae65 test: capture all five original failures before fixes
+6d78b8f docs: map Mixtape architecture before bug investigation
+aaead6a Merge pull request #45 from sarcb/fix/1216538223584876-search-dedup
+dc87e8c search: use SQLAlchemy 2.0 select() so Bug #3 duplicates actually surface
+2dfdeaa Add .gitignore file and update README with setup instructions
+7b64551 initial commit
+
+Command: git status --short --untracked-files=no
+(empty output above means tracked working tree is clean)

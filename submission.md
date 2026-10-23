@@ -306,6 +306,8 @@ a genuine new-entry POST and still verifies both notification types and read sta
   `artifacts/baseline_regressions.txt`. Existing starter tests are unchanged.
 - Recording instructions, narration, reset commands, and history demonstration:
   `DEMO_GUIDE.md`. Final coverage and security checks: `artifacts/repository_audit.md`.
+- The actual Git command output is saved in `artifacts/git_log.txt`. The required
+  screenshot remains manual: Computer Use was stopped with Escape before capture.
 
 All work is local on `bugfix/mixtape`. After explicit approval, publish with
 `git push -u origin bugfix/mixtape`. The intended future submission URL is

@@ -183,8 +183,10 @@ personal review, or Course Portal submission before doing it.
 - Keep `submission.md` and this guide open; keep `.env` closed.
 - Record in this order: architecture map -> two baseline objects -> one demo
   command -> full pytest -> branch and Git history. No manual database edits.
-- Capture the actual `git log --oneline` output with the branch visible if a new
-  screenshot is desired. `artifacts/git_log.txt` preserves the saved command output.
+- **Required manual screenshot:** capture the actual `git log --oneline` output
+  with the branch visible. Computer Use was stopped with Escape before capture,
+  so no screenshot exists yet. `artifacts/git_log.txt` preserves real command output.
+  Save your screenshot as `artifacts/git_log.png` and include it in the handoff.
 - Review the recording for legibility and save it with the Project 5 title.
 - Only after approving publication, run `git push -u origin bugfix/mixtape`.
 - Submit the branch URL and required evidence through the Course Portal.

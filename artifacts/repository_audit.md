@@ -24,7 +24,7 @@ was not supplied; the full project brief and starter README were read.
 | Full suite | **35 passed**: 13 unchanged starter tests + 22 added regression cases; `final_tests.txt`. |
 | App startup through factory | Actual local Flask process, temporary seeded DB, HTTP 200 and one Anthem result; `startup_verification.txt`, `scripts/verify_http.py`. |
 | Recording readiness | `DEMO_GUIDE.md`, `scripts/demo_mixtape.py`; verified saved-before/live-after examples, all five endpoints, 2–3 minute script, safe reset, and publishing instructions. |
-| Real Git log screenshot | Capture status and provenance will be recorded below with the saved actual command output. |
+| Real Git log screenshot | **MANUAL TASK REMAINS.** `git_log.txt` contains actual command output. Computer Use was stopped by the user's physical Escape key before a screenshot could be captured; no image was fabricated. |
 | Correct submission destination | Intended future URL: `https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape`. Not yet pushed or submitted. |
 
 ## Five independently committed fixes
@@ -87,7 +87,9 @@ edits/retries do not notify again. Concurrent playlist additions and broader
 authentication/API-hardening work are outside this assignment; no database redesign
 or unrelated UI was introduced.
 
-Before course submission: approve and run `git push -u origin bugfix/mixtape`,
+Before course submission: take a real screenshot of `git branch --show-current`
+and `git log --oneline` showing the five separate fixes; approve and run
+`git push -u origin bugfix/mixtape`,
 record/review the demonstration, and submit the exact branch URL plus write-up
 and history screenshot through the Course Portal. No remote action is implied by
 the local commits. Final working-tree cleanliness is checked after the evidence
