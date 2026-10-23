@@ -224,3 +224,47 @@ do not create alerts. The playlist comparison test preserves playlist alerts
 and verifies mark-read/unread filtering; the commit-failure test rolls back both
 Rating and Notification. Issue 5 will additionally exercise the reference flow
 through an actual new playlist entry once its insertion obstacle is repaired.
+
+**Issue #5 — The last song in a playlist never shows up**
+
+**How you reproduced it:** Inserted seven songs with explicit positions, then
+called `GET /playlists/playlist/songs`: count 6, with Track 6 last. The original
+`POST /playlists/playlist/songs` for Track 8 raised a real NOT NULL error for
+`playlist_entries.position`. After rollback and explicit insertion of the eighth
+fixture entry, the GET returned 7, with Track 7 last; Track 8 was hidden.
+`artifacts/baseline.json` records both the POST obstacle and shifting omission.
+The added one-entry/seven-entry GET cases and both new-entry POST cases failed
+before any fix. The starter's five-entry cases returned only four.
+
+**How you found the root cause:** Followed `routes/playlists.py:get_songs()` to
+`playlist_service.get_playlist_songs()`, its join against `playlist_entries`,
+ascending `position` order, and final serialization. The query retrieves all rows,
+but the final list comprehension iterates `songs[:-1]`. Traced the POST separately
+through `add_song()` to `notification_service.add_to_playlist()` and compared its
+relationship append with `models.py`'s required association fields and the explicit
+inserts in `seed_data.py`. The captured SQL omitted both `position` and `added_by`.
+
+**The root cause:** Python's `[:-1]` slice discards the final item of the correctly
+ordered query. Because the highest-position song is last, each new addition hides
+itself and reveals its predecessor. Independently, the POST used a plain
+many-to-many relationship append despite the association table requiring extra
+metadata. That prevented the full user-reported add/read sequence from running
+on this checkout. It was an application data-write mismatch, not a dependency
+version incompatibility.
+
+**Your fix:** `get_playlist_songs()` now serializes the full `songs` list.
+`add_to_playlist()` explicitly inserts the association with the contributor and
+`max(position) + 1` (or 1 for an empty playlist), allowing gaps in existing positions.
+It retains the timestamp default, validates referenced entities, skips repeat
+adds, and commits the entry and its owner notification together using the helper's
+transaction option. Schema, seed data, and ascending position order are unchanged.
+
+**Your side-effect check:** Ran starter playlist tests plus the playlist and
+notification endpoint regressions: **14 passed** (`artifacts/issue_5_tests.txt`).
+`test_playlist_includes_all_positions` covers empty, single-entry, and seven-entry
+playlists. `test_added_song_is_persisted_last_once_and_notifies` covers empty and
+populated playlists with position gaps, the new last item, fresh-session reads,
+contributor/timestamp persistence, repeated POSTs, and exactly one owner alert.
+Self-adds do not notify; missing playlist/song/user inputs remain HTTP 400, and
+missing playlist GET remains 404. The rating/playlist comparison test now uses
+a genuine new-entry POST and still verifies both notification types and read state.

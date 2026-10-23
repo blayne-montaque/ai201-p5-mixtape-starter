@@ -43,3 +43,17 @@ def test_added_song_is_persisted_last_once_and_notifies(client, count):
     notifications = client.get("/users/owner/notifications").get_json()
     assert notifications["count"] == 1
     assert notifications["notifications"][0]["type"] == "song_added_to_playlist"
+
+
+def test_playlist_self_add_and_rejected_inputs(client):
+    assert client.post("/playlists/playlist/songs", json={
+        "song_id": "song", "added_by": "owner"}).status_code == 201
+    assert client.get("/users/owner/notifications").get_json()["count"] == 0
+    for playlist_id, song_id, added_by in [
+        ("missing", "second", "friend"),
+        ("playlist", "missing", "friend"),
+        ("playlist", "second", "missing"),
+    ]:
+        assert client.post(f"/playlists/{playlist_id}/songs", json={
+            "song_id": song_id, "added_by": added_by}).status_code == 400
+    assert client.get("/playlists/playlist/songs").get_json()["count"] == 1

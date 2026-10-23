@@ -1,7 +1,7 @@
 import pytest
 
 from app import db
-from models import Notification, Rating, playlist_entries
+from models import Notification, Rating
 
 
 def rate(client, user="friend", score=5):
@@ -46,10 +46,7 @@ def test_own_rating_and_invalid_input_do_not_notify(client):
 
 
 def test_existing_playlist_notification_preserved_and_readable(client):
-    # A populated association lets the starter's working notification path run.
-    db.session.execute(playlist_entries.insert().values(
-        playlist_id="playlist", song_id="second", position=1, added_by="friend"))
-    db.session.commit()
+    # Exercise a real new-entry POST now that its required fields are supplied.
     response = client.post("/playlists/playlist/songs", json={"song_id": "second", "added_by": "friend"})
     assert response.status_code == 201
     assert rate(client).status_code == 201

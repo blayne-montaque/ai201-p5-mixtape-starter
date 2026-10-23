@@ -7,7 +7,7 @@ Notifications are generated when friends interact with a user's shared songs.
 
 from app import db
 from models import Notification, Song, User, Rating
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
 
 def create_notification(user_id: str, notification_type: str, body: str, *, commit: bool = True) -> Notification:
@@ -43,8 +43,7 @@ def add_to_playlist(playlist_id: str, song_id: str, added_by_user_id: str) -> No
         song_id: The ID of the song being added.
         added_by_user_id: The ID of the user who added the song.
     """
-    from models import Playlist
-    from services.playlist_service import get_playlist_songs
+    from models import Playlist, playlist_entries
 
     song = db.session.get(Song, song_id)
     if not song:
@@ -58,10 +57,21 @@ def add_to_playlist(playlist_id: str, song_id: str, added_by_user_id: str) -> No
     if not playlist:
         raise ValueError(f"Playlist {playlist_id} not found")
 
-    # Add the song to the playlist
-    if song not in playlist.songs:
-        playlist.songs.append(song)
-        db.session.commit()
+    # Repeating an add must not duplicate either the entry or its notification.
+    if song in playlist.songs:
+        return
+
+    last_position = (
+        db.session.query(func.max(playlist_entries.c.position))
+        .filter(playlist_entries.c.playlist_id == playlist_id)
+        .scalar()
+    )
+    db.session.execute(playlist_entries.insert().values(
+        playlist_id=playlist_id,
+        song_id=song_id,
+        position=(last_position or 0) + 1,
+        added_by=added_by_user_id,
+    ))
 
     # Notify the person who originally shared the song (if it wasn't them who added it)
     if song.shared_by != added_by_user_id:
@@ -69,7 +79,10 @@ def add_to_playlist(playlist_id: str, song_id: str, added_by_user_id: str) -> No
             user_id=song.shared_by,
             notification_type="song_added_to_playlist",
             body=f"{adder.username} added your song '{song.title}' to the playlist '{playlist.name}'.",
+            commit=False,
         )
+
+    db.session.commit()
 
 
 def rate_song(user_id: str, song_id: str, score: int) -> Rating:
