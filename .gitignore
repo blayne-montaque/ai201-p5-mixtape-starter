@@ -29,3 +29,6 @@ build/
 # Editor
 .vscode/
 .idea/
+
+# Test runner cache
+.pytest_cache/

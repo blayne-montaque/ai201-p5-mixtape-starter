@@ -1,0 +1,39 @@
+{
+  "issue_1": {
+    "saturday_streak": 12,
+    "sunday_streak": 1,
+    "expected": 13
+  },
+  "issue_2": {
+    "yesterday_only_count": 1,
+    "after_today_listen_count": 1,
+    "expected": [
+      0,
+      1
+    ]
+  },
+  "issue_3": {
+    "matching_results": 3,
+    "unique_song_ids": 1,
+    "expected": 1
+  },
+  "issue_4": {
+    "rating_http_status": 201,
+    "persisted_score": 5,
+    "rating_notifications": 0,
+    "expected": 1
+  },
+  "issue_5": {
+    "stored_before": 7,
+    "returned_before": 6,
+    "post_status": null,
+    "post_error": "NOT NULL constraint failed: playlist_entries.position",
+    "returned_after": 7,
+    "last_visible_before": "Track 6",
+    "last_visible_after": "Track 7",
+    "expected_counts": [
+      7,
+      8
+    ]
+  }
+}
