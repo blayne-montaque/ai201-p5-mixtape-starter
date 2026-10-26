@@ -2,7 +2,7 @@
 
 A social music app where friends share songs, build collaborative playlists, and track listening stats.
 
-This is the starter repo for **Project 5: Mixtape Bug Hunt**. The app has five open issues in its tracker. Your job is to find, fix, and document at least three of them.
+This repository began as the starter for **Project 5: Mixtape Bug Hunt**. All five reported issues are fixed on `bugfix/mixtape`; see [submission.md](submission.md) for the completed write-up.
 
 ---
 
@@ -32,7 +32,7 @@ ai201-project5-mixtape-starter/
 └── .gitignore
 ```
 
-The bugs live in the `services/` layer. The routes call services — if something is broken in an endpoint, trace it back to the service it calls.
+The reported bugs were in the `services/` layer. The routes call services — if something is broken in an endpoint, trace it back to the service it calls.
 
 ---
 
@@ -81,7 +81,7 @@ pytest tests/
 
 ---
 
-## The Five Open Issues
+## The Five Original Issues
 
 | # | Title | Affected service |
 |---|-------|-----------------|
@@ -108,7 +108,7 @@ Understanding the full call chain is part of the exercise — don't skip to the 
 
 ## Submission
 
-Create a branch named `bugfix/mixtape` for your fixes. Each bug fix should be its own commit using conventional format:
+The published `bugfix/mixtape` branch contains a separate conventional commit for each fix, using this format:
 
 ```
 fix: correct Sunday boundary condition in streak reset logic
@@ -119,7 +119,7 @@ See the project brief for full submission requirements.
 ## Completed bug hunt
 
 See [submission.md](submission.md) for the architecture map, AI usage, and five
-root cause analyses. [DEMO_GUIDE.md](DEMO_GUIDE.md) has verified Windows commands,
+root cause analyses. The optional [DEMO_GUIDE.md](DEMO_GUIDE.md) has verified Windows commands,
 before/after evidence, and the recording script. Run the isolated demonstration
 with `python scripts/demo_mixtape.py --check` and all tests with
 `python -m pytest tests/ -q`.

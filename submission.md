@@ -30,8 +30,9 @@ checks include fresh-session database reads, **35 passing pytest cases**, the
 five-behavior demo, and a real HTTP request to a factory-launched Flask process.
 Clock control replaces only time acquisition; SQLAlchemy queries, services,
 routes, and persistence execute normally. The full brief was supplied in chat
-during baseline preparation. No human review, video recording, course submission,
-or remote push is claimed. No Groq/LLM API calls were made and `.env` was not loaded.
+during baseline preparation. The branch and genuine Git-history screenshot are
+published. No human review, video recording, or Course Portal submission is claimed.
+No Groq/LLM API calls were made and `.env` was not loaded.
 
 # Codebase Map
 
@@ -304,12 +305,13 @@ a genuine new-entry POST and still verifies both notification types and read sta
   one Anthem result; `artifacts/startup_verification.txt`.
 - Original failures: `artifacts/baseline.md`, `artifacts/baseline.json`, and
   `artifacts/baseline_regressions.txt`. Existing starter tests are unchanged.
-- Recording instructions, narration, reset commands, and history demonstration:
-  `DEMO_GUIDE.md`. Final coverage and security checks: `artifacts/repository_audit.md`.
-- The actual Git command output is saved in `artifacts/git_log.txt`. The required
-  screenshot remains manual: Computer Use was stopped with Escape before capture.
+- Optional recording reference: [DEMO_GUIDE.md](DEMO_GUIDE.md). Final coverage
+  and security checks: [repository audit](artifacts/repository_audit.md).
+- The genuine [Git-history screenshot](artifacts/git-history.png) is tracked and
+  published, showing `bugfix/mixtape` and the five separate fix commits.
+  The earlier command-output snapshot remains in `artifacts/git_log.txt`.
 
-All work is local on `bugfix/mixtape`. After explicit approval, publish with
-`git push -u origin bugfix/mixtape`. The intended future submission URL is
-https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape .
-The branch has not been pushed or submitted through the Course Portal.
+Published submission branch:
+[bugfix/mixtape](https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape).
+Submit this branch URL, the root `submission.md`, and the Git-history screenshot
+through the Course Portal. Course Portal submission has not been confirmed.

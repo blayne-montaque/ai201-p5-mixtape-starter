@@ -1,5 +1,7 @@
 # Mixtape recording guide
 
+This is an optional recording reference, not a required submission deliverable.
+
 Mixtape is a social music JSON API: friends share songs, rate them, build playlists,
 and follow listening activity. This project repaired all five reported bugs and
 documented the causes with original failing evidence, regression tests, and five
@@ -172,10 +174,9 @@ navigation path, exact cause, fix, and side-effect checks.”
 “This is the bugfix/mixtape branch. The history shows the orientation checkpoint,
 the failing baseline, and five separate fix commits. The AI usage section explains
 Codex's role and the checks that verified its diagnoses. The branch URL, write-up,
-and Git-history screenshot are prepared for submission after publishing.”
+and genuine Git-history screenshot are published and ready for Course Portal submission.”
 
-Adapt “after publishing” if you record after pushing. Do not claim a push,
-personal review, or Course Portal submission before doing it.
+Do not claim personal review or Course Portal submission before doing it.
 
 ## Recording and handoff checklist
 
@@ -183,13 +184,11 @@ personal review, or Course Portal submission before doing it.
 - Keep `submission.md` and this guide open; keep `.env` closed.
 - Record in this order: architecture map -> two baseline objects -> one demo
   command -> full pytest -> branch and Git history. No manual database edits.
-- **Required manual screenshot:** capture the actual `git log --oneline` output
-  with the branch visible. Computer Use was stopped with Escape before capture,
-  so no screenshot exists yet. `artifacts/git_log.txt` preserves real command output.
-  Save your screenshot as `artifacts/git_log.png` and include it in the handoff.
+- The genuine [Git-history screenshot](artifacts/git-history.png) is already
+  tracked and published. Include it in the handoff; no new capture is needed.
+  `artifacts/git_log.txt` preserves the earlier command-output snapshot.
 - Review the recording for legibility and save it with the Project 5 title.
-- Only after approving publication, run `git push -u origin bugfix/mixtape`.
 - Submit the branch URL and required evidence through the Course Portal.
 
-Intended future submission URL (local branch has not been pushed):
+Published submission branch:
 https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape

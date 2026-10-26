@@ -1,6 +1,7 @@
 # Project 5 repository audit
 
-Audit date: 2026-10-23 (America/New_York). Target: all **25 required + 3 stretch**
+Technical audit: 2026-10-23; publication and screenshot verified 2026-10-26
+(America/New_York). Target: all **25 required + 3 stretch**
 points described in the user's brief. This is evidence of feature coverage, not
 a claim that a course grade has been awarded. The separate detailed grading page
 was not supplied; the full project brief and starter README were read.
@@ -23,9 +24,9 @@ was not supplied; the full project brief and starter README were read.
 | Separate conventional fix commits | Five commits listed below, each including its RCA and actual targeted test result. |
 | Full suite | **35 passed**: 13 unchanged starter tests + 22 added regression cases; `final_tests.txt`. |
 | App startup through factory | Actual local Flask process, temporary seeded DB, HTTP 200 and one Anthem result; `startup_verification.txt`, `scripts/verify_http.py`. |
-| Recording readiness | `DEMO_GUIDE.md`, `scripts/demo_mixtape.py`; verified saved-before/live-after examples, all five endpoints, 2–3 minute script, safe reset, and publishing instructions. |
-| Real Git log screenshot | **MANUAL TASK REMAINS.** `git_log.txt` contains actual command output. Computer Use was stopped by the user's physical Escape key before a screenshot could be captured; no image was fabricated. |
-| Correct submission destination | Intended future URL: `https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape`. Not yet pushed or submitted. |
+| Optional recording reference | [DEMO_GUIDE.md](../DEMO_GUIDE.md) and `scripts/demo_mixtape.py` provide verified before/after examples, all five endpoints, narration, and safe reset instructions. The guide is not a required deliverable. |
+| Real Git log screenshot | **Complete.** [git-history.png](git-history.png) is tracked in commit `bb9d14e` and published. Visual inspection confirms the branch and five separate fix commits. `git_log.txt` preserves the earlier command-output snapshot. |
+| Published submission branch | **Complete.** [bugfix/mixtape](https://github.com/blayne-montaque/ai201-p5-mixtape-starter/tree/bugfix/mixtape) was verified against GitHub: remote and local HEAD matched `bb9d14e` before this documentation cleanup. Course Portal submission has not been confirmed. |
 
 ## Five independently committed fixes
 
@@ -70,7 +71,8 @@ positions, repeat adds, contributor/timestamp persistence, and JSON responses.
 - Starter seed data, schema, requirements, and existing tests were preserved.
   New persistent seeding used only the explicitly selected ignored demo database;
   the smoke check used a temporary database that was removed.
-- No pushes, PRs, merges, course submissions, or recordings were performed.
+- The completed branch and screenshot are published. No PR, merge, Course Portal
+  submission, or recording is claimed for this work.
 
 ## Environment, limits, and manual handoff
 
@@ -87,10 +89,9 @@ edits/retries do not notify again. Concurrent playlist additions and broader
 authentication/API-hardening work are outside this assignment; no database redesign
 or unrelated UI was introduced.
 
-Before course submission: take a real screenshot of `git branch --show-current`
-and `git log --oneline` showing the five separate fixes; approve and run
-`git push -u origin bugfix/mixtape`,
-record/review the demonstration, and submit the exact branch URL plus write-up
-and history screenshot through the Course Portal. No remote action is implied by
-the local commits. Final working-tree cleanliness is checked after the evidence
-commit at handoff.
+Remaining submission step: submit the published branch URL, root
+[submission.md](../submission.md), and genuine [Git-history screenshot](git-history.png)
+through the Course Portal. The optional demo guide is available for a recording
+session; it is not a required submission artifact. No further screenshot capture
+or initial branch publication is needed. Final working-tree cleanliness is checked
+after committing and pushing this documentation cleanup.
